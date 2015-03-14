@@ -1,4 +1,11 @@
 make
 
-sudo ./mp709 on
-sudo ./mp709 off
+Two ways to execute:
+
+1. get a list of available mp709 devices
+sudo ./mp709
+
+2. turn <device_number> on|off
+sudo ./mp709 on|off <device_number>
+
+
