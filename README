@@ -8,4 +8,15 @@ sudo ./mp709
 2. turn <device_number> on|off
 sudo ./mp709 on|off <device_number>
 
+p.s.
+I tried to use the following implementation
+https://github.com/radistmorse/mp709
+it uses hidapi library
+https://github.com/signal11/hidapi
 
+But I failed to use it with CentOS 6 and Ubuntu 14.04 because of it worked unstable and process hanged up very often.
+
+That's why I did a fork from very simple implementation https://github.com/sergei-svistunov/MP709, which is based on file operations with devices. It works very stable and solves my task completely.
+
+p.p.s
+If somebody still want to use https://github.com/signal11/hidapi and get an error during linking (don't remember exact wording, but something about libtool and inability to link), to resolve the issue try to run ./configure --with-gnu-ld then re-compile again.
