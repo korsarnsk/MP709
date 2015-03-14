@@ -19,14 +19,25 @@ int main(int argc, char **argv) {
 	int fd, res;
 	char buf[256];
 	char dev_name[32];
+	char dev_num_str[10];
 	bool has_device = false;
 	struct stat st;
+
+	printf("debug argc: %d\n", argc);
+
+	if (2 == argc || argc > 3) {
+		printf("usage:\n");
+		printf("%s - get list of devices\n", argv[0]);
+		printf("%s on|off <device_number> - set up device status\n", argv[0]);
+		exit(1);
+	}
+
 
 	int i;
 	for (i=0; i<9; ++i) {
 		sprintf(dev_name, "/dev/hidraw%i", i);
 
-		if (stat(dev_name, &st))
+		if (stat(dev_name, &st) < 0)
 			break;
 
 		fd = open(dev_name, O_RDWR|O_NONBLOCK);
@@ -44,10 +55,13 @@ int main(int argc, char **argv) {
 
 		if (strstr(buf, "MP709") != NULL) {
 			has_device = true;
-			break;
-		} else {
-			close(fd);
-		};
+
+			sprintf(dev_num_str, "%d", i);
+			if (argv[2][0] == dev_num_str[0]) {
+				break;
+			}
+		}
+		close(fd);
 	};
 
 	if (!has_device) {
@@ -55,12 +69,18 @@ int main(int argc, char **argv) {
 		return 1;
 	};
 
+	if (argc < 3) {
+		return 0;
+	}
+
 	buf[0] = 0xE7;
 
-	if (argc > 1 && strcasecmp(argv[1], "on") == 0)
+	if (strcasecmp(argv[1], "on") == 0)
 		buf[1] = 0x0;
 	else
 		buf[1] = 0x19;
+
+	printf("turning %s device %s\n", argv[1], dev_name);
 
 	res = write(fd, buf, 2);
 	if (res < 0) {
